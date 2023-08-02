@@ -11,11 +11,12 @@ import {
     TextInput
 } from 'react-native';
 import { fetchDataCart, deleteDocumentByProductId } from './components/handles';
+import userIdDataSingleton from './components/UserIdDataSingleton';
 
 const CartScreen = () => {
     const [data, setData] = useState([])
     const [amount, setAmount] = useState({})
-    const userId = 'lYJfrythiSD35ubkxGOz'
+    const userId = (userIdDataSingleton.getData()).toString()
 
     useEffect(() => {
         getDataCart()

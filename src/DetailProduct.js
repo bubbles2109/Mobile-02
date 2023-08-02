@@ -45,7 +45,7 @@ const DetailProductScreen = ({ navigation }) => {
   }
 
   const onPressAddToCart = () => {
-
+    
   }
 
   return (

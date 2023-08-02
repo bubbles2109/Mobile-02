@@ -74,15 +74,26 @@ export const createAccount = async(username, email, password) => {
    }
 }
 
-export const getDataUser = async(email, password) => {
+export const getDataAccount = async(email, password) => {
     try {
-        const response = await firestore().collection('account').where('email ==', email).where('password ==', password).get()
+        const response = await firestore().collection('account').where('email', '==', email).where('password', '==', password).get()
         if (!response.empty){
             const userData = response.docs[0].data();
             return userData
         } else {
             return null
         }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const getProfileUser = async(email) => {
+    try {
+        const response = await firestore().collection('user').where('email', '==', email).get()
+        const profileData = response.docs[0].data()
+        const profileId = response.docs[0].id
+        return { profileData, profileId }
     } catch (error) {
         console.log(error)
     }

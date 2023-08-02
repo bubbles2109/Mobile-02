@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
 import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
-import { getDataUser } from './components/handles';
+import { getDataAccount } from './components/handles';
+import userDataSingleton from './components/UserDataSingleTon';
 
 const LoginScreen = () => {
     const navigation = useNavigation();
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [dataUser, setDataUser] = useState([])
+    const [reload, setReload] = useState(false);
 
     const onPressRegister = () => {
         navigation.navigate('Register')
@@ -16,18 +17,26 @@ const LoginScreen = () => {
 
     const onPressLogin = () => {
         //navigation.navigate('MainContainer')
-        if (email != '' && password == '') {
-            getDataUser(email, password)
-            .then((data) => {
-                setDataUser(data)
-                navigation.navigate('MainContainer', {dataUser})
+        if (email != '' && password != '') {
+            getDataAccount(email, password)
+            .then( async(data) => {
+                await userDataSingleton.setData(data)
+                console.log(data)
+                navigation.navigate('MainContainer', {reload: true})
             })
         }
+    }
+
+    const onPressBack = () => {
+        navigation.goBack()
     }
 
     return (
         <ScrollView style={{backgroundColor: 'white'}}>
             <View style={styles.container}>
+                <TouchableOpacity style={{position: 'absolute', zIndex: 1, paddingHorizontal: 20, paddingVertical: 10}} onPress={onPressBack}>
+                    <Text style={{fontSize: 30, fontWeight: 'bold'}}>&#8826;</Text>
+                </TouchableOpacity>
                 <View style={styles.innerContainer}>
                     <Image style={styles.logo} resizeMode='contain' source={require('../asset/image/logo.jpg')} />
                 </View>

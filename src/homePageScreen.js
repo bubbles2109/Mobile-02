@@ -10,7 +10,9 @@ import {
   Image,
 } from 'react-native';
 import { fetchDataProduct, creatDataCart } from './components/handles';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import userDataSingleton from './components/UserDataSingleTon';
+import userIdDataSingleton from './components/UserIdDataSingleton';
 
 const HomeScreen = () => {
   const [data, setData] = useState([])
@@ -19,12 +21,16 @@ const HomeScreen = () => {
 
   const navigation = useNavigation()
 
+  const dataUser = userDataSingleton.getData()
+
   useEffect(() => {
     const getDataProduct = async () => {
       const dataRef = await fetchDataProduct()
       setData(dataRef)
       //console.log(dataRef)
     };
+
+    console.log(dataUser)
 
     getDataProduct()
   }, [])
@@ -34,7 +40,7 @@ const HomeScreen = () => {
   }
 
   const onPressPlus = async(item) => {
-    const userId = 'lYJfrythiSD35ubkxGOz'
+    const userId = userIdDataSingleton.getData()
     await creatDataCart(item, userId)
   }
 

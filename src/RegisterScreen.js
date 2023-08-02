@@ -16,8 +16,12 @@ const Register = ({ navigation }) => {
     confirmPassword: false
   })
 
-  const selectBackBtn = () => {
+  const onPressBack = () => {
     navigation.goBack()
+  }
+
+  const onPressLoginNow = () => {
+    navigation.navigate('Login')
   }
 
   const checkEmailFormat = (email) => {
@@ -55,7 +59,7 @@ const Register = ({ navigation }) => {
     <ScrollView style={{ backgroundColor: 'white' }}>
       <View style={{ flex: 1 }}>
         <View style={styles.headerDetails}>
-          <TouchableOpacity style={styles.customButton} onPress={selectBackBtn}>
+          <TouchableOpacity style={styles.customButton} onPress={onPressBack}>
             <Text style={styles.backButton}>&#8826;</Text>
           </TouchableOpacity>
         </View>
@@ -99,7 +103,7 @@ const Register = ({ navigation }) => {
         </View>
         <View style={{ alignItems: 'center', marginVertical: 20 }}>
           <Text>Already have an account? {''}
-            <Text onPress={onPressRegister} style={{ textDecorationLine: 'underline', fontWeight: 'bold', color: '#09b44c' }}>Login now</Text>
+            <Text onPress={onPressLoginNow} style={{ textDecorationLine: 'underline', fontWeight: 'bold', color: '#09b44c' }}>Login now</Text>
           </Text>
         </View>
       </View>

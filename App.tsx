@@ -12,6 +12,7 @@ import DetailProductScreen from './src/DetailProduct';
 import LoginScreen from './src/LoginScreen';
 import RegisterScreen from './src/RegisterScreen';
 import CartScreen from './src/CartScreen';
+import ProfileScreen from './src/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,12 +20,13 @@ function App(): JSX.Element {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false, animation: 'slide_from_right'}}>
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="MainContainer" component={MainContainer} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Cart" component={CartScreen} />
         <Stack.Screen name="DetailProduct" component={DetailProductScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
       </Stack.Navigator>
       
     </NavigationContainer>

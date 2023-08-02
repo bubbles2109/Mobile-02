@@ -2,13 +2,12 @@ import React, { useState } from 'react'
 import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import { getDataAccount } from './components/handles';
-import userDataSingleton from './components/UserDataSingleTon';
+import userDataSingleton from './components/UserDataSingleton';
 
 const LoginScreen = () => {
     const navigation = useNavigation();
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [reload, setReload] = useState(false);
 
     const onPressRegister = () => {
         navigation.navigate('Register')
@@ -16,7 +15,6 @@ const LoginScreen = () => {
     }
 
     const onPressLogin = () => {
-        //navigation.navigate('MainContainer')
         if (email != '' && password != '') {
             getDataAccount(email, password)
             .then( async(data) => {

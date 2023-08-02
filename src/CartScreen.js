@@ -8,7 +8,8 @@ import {
     View,
     FlatList,
     Image,
-    TextInput
+    TextInput,
+    ActivityIndicator
 } from 'react-native';
 import { fetchDataCart, deleteDocumentByProductId } from './components/handles';
 import userIdDataSingleton from './components/UserIdDataSingleton';
@@ -16,10 +17,17 @@ import userIdDataSingleton from './components/UserIdDataSingleton';
 const CartScreen = () => {
     const [data, setData] = useState([])
     const [amount, setAmount] = useState({})
-    const userId = (userIdDataSingleton.getData()).toString()
+    const [isLoading, setIsLoading] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(true);
+
+    const userId = userIdDataSingleton.getData()
 
     useEffect(() => {
+        console.log(userId)
         getDataCart()
+            .then(() => {
+                setIsLoading(false);
+            });
     }, [])
 
     useEffect(() => {
@@ -33,7 +41,7 @@ const CartScreen = () => {
 
         const initialAmount = {};
         dataRef.forEach((item) => {
-            initialAmount[item.id] = 1;
+            initialAmount[item.id] = amount[item.id] || 1;
         });
         setAmount(initialAmount);
 
@@ -42,14 +50,14 @@ const CartScreen = () => {
     const addAmount = (itemId) => {
         setAmount((initialAmount) => ({
             ...initialAmount,
-            [itemId]: (initialAmount[itemId]) + 1,
+            [itemId]: (initialAmount[itemId] || 1) + 1,
         }));
     };
 
     const decreaseAmount = (itemId) => {
         setAmount((initialAmount) => ({
             ...initialAmount,
-            [itemId]: (initialAmount[itemId]) - 1,
+            [itemId]: (initialAmount[itemId] || 1) - 1,
         }));
     };
 
@@ -79,11 +87,11 @@ const CartScreen = () => {
                             </View>
                             <View style={stylesItem.quantityView}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center', position: 'absolute' }}>
-                                    <TouchableOpacity style={[stylesItem.button, {backgroundColor: 'red'}]} onPress={() => decreaseAmount(item.id)}>
-                                        <Text style={{ fontSize: 20, color: 'white'}}>&#8722;</Text>
+                                    <TouchableOpacity style={[stylesItem.button, { backgroundColor: 'red' }]} onPress={() => decreaseAmount(item.id)}>
+                                        <Text style={{ fontSize: 20, color: 'white' }}>&#8722;</Text>
                                     </TouchableOpacity>
                                     <TextInput style={stylesItem.textInput} value={(amount[item.id] || 1).toString()} editable={false}></TextInput>
-                                    <TouchableOpacity style={[stylesItem.button, {backgroundColor: 'green'}]} onPress={() => addAmount(item.id)}>
+                                    <TouchableOpacity style={[stylesItem.button, { backgroundColor: 'green' }]} onPress={() => addAmount(item.id)}>
                                         <Text style={{ fontSize: 20, color: 'white' }}>+</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -101,11 +109,24 @@ const CartScreen = () => {
                 <Text style={styles.title}>Cart</Text>
             </View>
             <View style={{ backgroundColor: '#e3e3e3', flex: 1, margin: 10, borderRadius: 15, padding: 10 }}>
-                <FlatList data={data} renderItem={renderItem}>
-                </FlatList>
-                <TouchableOpacity style={styles.paymentButton}>
-                    <Text style={styles.textPayment}>Payment now</Text>
-                </TouchableOpacity>
+                {isLoading ? (
+                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                        <ActivityIndicator size="large" color="gray" />
+                    </View>
+                ) : (
+                    data && data.length > 0 ? (
+                        <>
+                            <FlatList data={data} renderItem={renderItem}>
+                            </FlatList>
+                            <TouchableOpacity style={styles.paymentButton}>
+                                <Text style={styles.textPayment}>Payment now</Text>
+                            </TouchableOpacity></>
+                    ) : (
+                        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                            <Text>Giỏ hàng đang trống !</Text>
+                        </View>
+                    )
+                )}
             </View>
         </View>
     );
@@ -135,18 +156,18 @@ const styles = StyleSheet.create({
         width: 130,
     },
     paymentButton: {
-        marginHorizontal: 20, 
-        marginVertical: 10, 
-        alignItems: 'center', 
-        justifyContent: 'center', 
+        marginHorizontal: 20,
+        marginVertical: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
         borderWidth: 0.5,
         borderRadius: 15,
         backgroundColor: '#ea9c00',
         height: 50
     },
     textPayment: {
-        fontSize: 18, 
-        fontWeight: 'bold', 
+        fontSize: 18,
+        fontWeight: 'bold',
         color: 'white'
     }
 });

@@ -8,18 +8,18 @@ import {
   View,
   FlatList,
   Image,
+  ActivityIndicator
 } from 'react-native';
 import { fetchDataProduct, creatDataCart } from './components/handles';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import userDataSingleton from './components/UserDataSingleTon';
+import userDataSingleton from './components/UserDataSingleton';
 import userIdDataSingleton from './components/UserIdDataSingleton';
 
 const HomeScreen = () => {
-  const [data, setData] = useState([])
-
-  const slideRef = useRef(null);
-
   const navigation = useNavigation()
+
+  const [data, setData] = useState([])
+  const [isLoading, setIsLoading] = useState(true);
 
   const dataUser = userDataSingleton.getData()
 
@@ -27,7 +27,7 @@ const HomeScreen = () => {
     const getDataProduct = async () => {
       const dataRef = await fetchDataProduct()
       setData(dataRef)
-      //console.log(dataRef)
+      setIsLoading(false)
     };
 
     console.log(dataUser)
@@ -35,19 +35,19 @@ const HomeScreen = () => {
     getDataProduct()
   }, [])
 
-  const selectProduct = ( item ) => {
-    navigation.push('DetailProduct', {item})
+  const selectProduct = (item) => {
+    navigation.push('DetailProduct', { item })
   }
 
-  const onPressPlus = async(item) => {
+  const onPressPlus = async (item) => {
     const userId = userIdDataSingleton.getData()
     await creatDataCart(item, userId)
   }
 
   const renderItem = ({ item }) => {
     return (
-      <TouchableOpacity style={{ padding: 10 }} activeOpacity={1} onPress={ () => selectProduct(item) }>
-          <View style={[styles.slide, { flex: 1 }]}>
+      <TouchableOpacity style={{ padding: 10 }} activeOpacity={1} onPress={() => selectProduct(item)}>
+        <View style={[styles.slide, { flex: 1 }]}>
           <Image style={styles.image} source={{ uri: item.image }} />
           <Text style={styles.titleItem}>{item.title}</Text>
           <Text>{item.weight}</Text>
@@ -68,10 +68,23 @@ const HomeScreen = () => {
 
   return (
     <View style={{ backgroundColor: 'white', flex: 1 }}>
-      <ScrollView>
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 25, color: 'black', fontWeight: 'bold', padding: 10 }}>Exclusive Offer</Text>
-          <View style={{ height: 280 }}>
+      {isLoading ? (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <ActivityIndicator size="large" color="gray" />
+        </View>
+      ) : (
+        <ScrollView>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 25, color: 'black', fontWeight: 'bold', padding: 10 }}>Exclusive Offer</Text>
+            <FlatList
+              //ref={slideRef}
+              data={data}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id.toString()}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+            />
+            <Text style={{ fontSize: 25, color: 'black', fontWeight: 'bold', padding: 10 }}>Best Selling</Text>
             <FlatList
               //ref={slideRef}
               data={data}
@@ -81,17 +94,8 @@ const HomeScreen = () => {
               showsHorizontalScrollIndicator={false}
             />
           </View>
-          <Text style={{ fontSize: 25, color: 'black', fontWeight: 'bold', padding: 10 }}>Best Selling</Text>
-          <FlatList
-            //ref={slideRef}
-            data={data}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id.toString()}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-      </ScrollView>
+        </ScrollView>
+      )}
     </View>
   );
 }

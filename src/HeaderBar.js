@@ -12,7 +12,7 @@ const HeaderBar = ({ showHeader, title, searchText, setSearchText }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Store</Text>
+      <Text style={styles.title}>Online Shop</Text>
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}

@@ -10,7 +10,7 @@ import {
   Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import userDataSingleton from './components/UserDataSingleTon';
+import userDataSingleton from './components/UserDataSingleton';
 import userIdDataSingleton from './components/UserIdDataSingleton';
 import { getProfileUser } from './components/handles';
 
@@ -40,6 +40,8 @@ const ProfileScreen = () => {
   const userName = data ? data.name : 'Guess'
 
   const handleReload = () => {
+    userDataSingleton.setData(null)
+    userIdDataSingleton.setData(null)
     setReload(!reload);
   };
 
@@ -63,7 +65,7 @@ const ProfileScreen = () => {
           {dataUser ? (
             <TouchableOpacity
             style={styles.customButton}
-            onPress={() => {userDataSingleton.setData(null); handleReload();}}>
+            onPress={handleReload}>
             <View style={styles.innerButton}>
               <View
                 style={[

@@ -72,11 +72,11 @@ const ProfileScreen = () => {
               <View
                 style={[
                   styles.innerButon_imageView,
-                  { backgroundColor: '#ccf2ee', borderColor: 'green' },
+                  { backgroundColor: '#ffaa96', borderColor: 'red' },
                 ]}
               >
                 <Image
-                  style={{ height: 30, width: 30, tintColor: 'green' }}
+                  style={{ height: 30, width: 30, tintColor: 'red' }}
                   source={require('../asset/image/logout.png')}
                 />
               </View>

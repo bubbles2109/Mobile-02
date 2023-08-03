@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -13,7 +13,9 @@ import {
 import userIdDataSingleton from './components/UserIdDataSingleton';
 import { checkProductCart, creatDataCart } from './components/handles';
 
-const DetailProductScreen = ({ navigation }) => {
+const DetailProductScreen = () => {
+  const navigation = useNavigation();
+  
   const route = useRoute();
   const { item } = route.params;
 
@@ -54,6 +56,8 @@ const DetailProductScreen = ({ navigation }) => {
         await creatDataCart(item, userId);
         Alert.alert('Notification', 'Added product successfully.');
       }
+    } else {
+      navigation.navigate('Login')
     }
   }
 

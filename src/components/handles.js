@@ -136,3 +136,11 @@ export const checkProductCart = async (userId, productId) => {
         return false
     }
 }
+export const checkAccount = async (email) => {
+    try {
+        const accountData = await firestore().collection('user').where('email', '==', email).get()
+        return accountData
+    } catch (error) {
+        console.log(error)
+    }
+}

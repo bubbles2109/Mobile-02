@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import { getDataAccount } from './components/handles';
 import userDataSingleton from './components/UserDataSingleton';
@@ -8,20 +8,55 @@ const LoginScreen = () => {
     const navigation = useNavigation();
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [isValidEmail, setIsValidEmail] = useState(true)
+    const [isEmpty, setIsEmpty] = useState({
+        email: false,
+        password: false,
+    })
+    const [loginError, setLoginError] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
 
     const onPressRegister = () => {
         navigation.navigate('Register')
-        console.log('click')
     }
 
-    const onPressLogin = () => {
-        if (email != '' && password != '') {
-            getDataAccount(email, password)
-            .then( async(data) => {
-                await userDataSingleton.setData(data)
-                console.log(data)
-                navigation.navigate('MainContainer', {reload: true})
-            })
+    const checkEmailFormat = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        return emailRegex.test(email)
+    }
+
+    const checkEmpty = () => {
+        return {
+            email: email === '',
+            password: password === '',
+        };
+    };
+
+    const onPressLogin = async () => {
+        const emptyFields = checkEmpty();
+        const isValidEmail = checkEmailFormat(email);
+
+        setIsEmpty(emptyFields)
+        setIsValidEmail(isValidEmail)
+
+        if (!emptyFields.email && !emptyFields.password && isValidEmail) {
+            setIsLoading(true)
+            try {
+                const data = await getDataAccount(email, password)
+                if (data) {
+                    await userDataSingleton.setData(data)
+                    console.log(data)
+                    setIsLoading(false)
+                    navigation.navigate('MainContainer', { reload: true });
+                } else {
+                    setIsLoading(false)
+                    setLoginError('Incorrect email or password.')
+                }
+            } catch (error) {
+                setIsLoading(false)
+                console.error('Error logging in:', error)
+                setLoginError('An error occurred while logging in. Please try again.')
+            }
         }
     }
 
@@ -30,46 +65,59 @@ const LoginScreen = () => {
     }
 
     return (
-        <ScrollView style={{backgroundColor: 'white'}}>
-            <View style={styles.container}>
-                <TouchableOpacity style={{position: 'absolute', zIndex: 1, paddingHorizontal: 20, paddingVertical: 10}} onPress={onPressBack}>
-                    <Text style={{fontSize: 30, fontWeight: 'bold'}}>&#8826;</Text>
-                </TouchableOpacity>
-                <View style={styles.innerContainer}>
-                    <Image style={styles.logo} resizeMode='contain' source={require('../asset/image/logo.jpg')} />
+        <View style={{ flex: 1 }}>
+            {isLoading ? (
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <ActivityIndicator size="large" color="gray" />
                 </View>
-                <View>
-                    <TextInput style={styles.input} placeholder='Email' value={email} onChangeText={(text) => setEmail(text)}></TextInput>
-                    <TextInput style={styles.input} placeholder='Password' value={password} onChangeText={(text) => setPassword(text)}></TextInput>
-                    <TouchableOpacity style={styles.loginButton} onPress={onPressLogin}>
-                        <Text style={styles.textButton}>Login</Text>
-                    </TouchableOpacity>
-                    <View style={{ alignItems: 'center', marginHorizontal: 20 }}>
-                        <View style={styles.innerViewLine}>
-                            <View style={styles.line} />
-                            <Text style={{ paddingHorizontal: 10 }}>Or Login with</Text>
-                            <View style={styles.line} />
+            ) : (
+                <ScrollView style={{ backgroundColor: 'white' }}>
+                    <View style={styles.container}>
+                        <TouchableOpacity style={{ position: 'absolute', zIndex: 1, paddingHorizontal: 20, paddingVertical: 10 }} onPress={onPressBack}>
+                            <Text style={{ fontSize: 30, fontWeight: 'bold' }}>&#8826;</Text>
+                        </TouchableOpacity>
+                        <View style={styles.innerContainer}>
+                            <Image style={styles.logo} resizeMode='contain' source={require('../asset/image/logo.jpg')} />
+                        </View>
+                        <View>
+                            <TextInput style={styles.input} placeholder='Email' value={email} onChangeText={(text) => setEmail(text)}></TextInput>
+                            {(isEmpty.email && <Text style={{ color: 'red', marginHorizontal: 20 }}>Email is empty</Text>) || (!isValidEmail && <Text style={{ color: 'red', marginHorizontal: 20 }}>Wrong email format</Text>)}
+
+                            <TextInput style={styles.input} placeholder='Password' value={password} onChangeText={(text) => setPassword(text)}></TextInput>
+                            {isEmpty.password && <Text style={{ color: 'red', marginHorizontal: 20 }}>Password is empty</Text>}
+                            {loginError && <Text style={{ color: 'red', marginHorizontal: 20 }}>{loginError}</Text>}
+
+                            <TouchableOpacity style={styles.loginButton} onPress={onPressLogin}>
+                                <Text style={styles.textButton}>Login</Text>
+                            </TouchableOpacity>
+                            <View style={{ alignItems: 'center', marginHorizontal: 20 }}>
+                                <View style={styles.innerViewLine}>
+                                    <View style={styles.line} />
+                                    <Text style={{ paddingHorizontal: 10 }}>Or Login with</Text>
+                                    <View style={styles.line} />
+                                </View>
+                            </View>
+                            <View style={styles.innerViewOtherButton}>
+                                <TouchableOpacity style={styles.otherLoginButton}>
+                                    <Image style={styles.image} resizeMode='contain' source={require('../asset/image/google.png')} />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.otherLoginButton}>
+                                    <Image style={styles.image} resizeMode='contain' source={require('../asset/image/facebook.png')} />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.otherLoginButton}>
+                                    <Image style={styles.image} resizeMode='contain' source={require('../asset/image/apple-logo.png')} />
+                                </TouchableOpacity>
+                            </View>
+                            <View style={{ alignItems: 'center', marginVertical: 20 }}>
+                                <Text>Do not have an account? {''}
+                                    <Text onPress={onPressRegister} style={{ textDecorationLine: 'underline', fontWeight: 'bold', color: '#09b44c' }}>Register now</Text>
+                                </Text>
+                            </View>
                         </View>
                     </View>
-                    <View style={styles.innerViewOtherButton}>
-                        <TouchableOpacity style={styles.otherLoginButton}>
-                            <Image style={styles.image} resizeMode='contain' source={require('../asset/image/google.png')} />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.otherLoginButton}>
-                            <Image style={styles.image} resizeMode='contain' source={require('../asset/image/facebook.png')} />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.otherLoginButton}>
-                            <Image style={styles.image} resizeMode='contain' source={require('../asset/image/apple-logo.png')} />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={{ alignItems: 'center', marginVertical: 20 }}>
-                        <Text>Do not have an account? {''}
-                            <Text onPress={onPressRegister} style={{ textDecorationLine: 'underline', fontWeight: 'bold', color: '#09b44c' }}>Register now</Text>
-                        </Text>
-                    </View>
-                </View>
-            </View>
-        </ScrollView>
+                </ScrollView>
+            )}
+        </View>
     )
 }
 
@@ -124,8 +172,8 @@ const styles = StyleSheet.create({
         marginVertical: 20
     },
     innerViewOtherButton: {
-        flexDirection: 'row', 
-        marginHorizontal: 20, 
+        flexDirection: 'row',
+        marginHorizontal: 20,
         justifyContent: 'space-between'
     },
     otherLoginButton: {

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
 
 import HomeScreen from './homePageScreen';
 import ExploreScreen from './ExploreScreen';

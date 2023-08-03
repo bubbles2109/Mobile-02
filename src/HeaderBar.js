@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 
 const HeaderBar = ({ showHeader, title, searchText, setSearchText }) => {
   if (!showHeader) {
@@ -12,56 +12,39 @@ const HeaderBar = ({ showHeader, title, searchText, setSearchText }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Online Shop</Text>
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search"
-          value={searchText}
-          onChangeText={setSearchText}
-        />
-        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-          <Text style={styles.searchButtonText}>Search</Text>
-        </TouchableOpacity>
-      </View>
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search Store"
+        value={searchText}
+        onChangeText={setSearchText}
+      />
+      <Image
+        style={styles.searchIcon}
+        source={require('../asset/image/search.png')}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    paddingBottom: 30
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: 'black',
-    padding: 10
-  },
-  searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingHorizontal: 10,
     marginHorizontal: 20,
+    marginVertical: 10,
   },
   searchInput: {
-    borderWidth: 1,
-    borderRadius: 10,
-    width: 200,
-    height: 40,
-    paddingHorizontal: 10,
+    flex: 1,
+    paddingVertical: 10,
+    paddingRight: 10,
   },
-  searchButton: {
-    marginLeft: 10,
-    backgroundColor: 'blue',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-  },
-  searchButtonText: {
-    color: 'white',
+  searchIcon: {
+    width: 20,
+    height: 20,
   },
 });
 

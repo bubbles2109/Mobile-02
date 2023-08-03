@@ -84,6 +84,9 @@ const HomeScreen = () => {
       ) : (
         <ScrollView>
           <View style={{ flex: 1 }}>
+            <View style={{ justifyContent: 'center', alignItems: 'center', paddingVertical: 10}}>
+              <Image style={{ borderRadius: 20 }} source={require('../asset/image/poster.png')}/>
+            </View>
             <Text style={{ fontSize: 25, color: 'black', fontWeight: 'bold', padding: 10 }}>Exclusive Offer</Text>
             <FlatList
               //ref={slideRef}

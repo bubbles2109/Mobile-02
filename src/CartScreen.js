@@ -9,21 +9,21 @@ import {
     FlatList,
     Image,
     TextInput,
-    ActivityIndicator
+    ActivityIndicator,
+    Alert
 } from 'react-native';
-import { fetchDataCart, deleteDocumentByProductId } from './components/handles';
+import { fetchDataCart, deleteDocumentByProductId, createBill, deleteCart } from './components/handles';
 import userIdDataSingleton from './components/UserIdDataSingleton';
 
 const CartScreen = () => {
     const [data, setData] = useState([])
     const [amount, setAmount] = useState({})
-    const [isLoading, setIsLoading] = useState(true);
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const [isLoading, setIsLoading] = useState(true)
+    const [isLoadingPayment, setIsLoadingPayment] = useState(false)
 
     const userId = userIdDataSingleton.getData()
 
     useEffect(() => {
-        console.log(userId)
         getDataCart()
             .then(() => {
                 setIsLoading(false);
@@ -66,6 +66,38 @@ const CartScreen = () => {
         getDataCart()
     }
 
+    const onPressPayment = async () => {
+        setIsLoadingPayment(true)
+
+        const items = data.map(item => ({
+            id: item.id,
+            amount: amount[item.id] || 1
+        }))
+
+        try {
+            const billId = await createBill(userId, items);
+            await deleteCart(userId)
+            Alert.alert(
+                'Notification',
+                'Payment success',
+                [
+                  {
+                    text: 'OK',
+                    onPress: () => {
+                      getDataCart(); // Gọi lại hàm sau khi người dùng chọn OK
+                    }
+                  }
+                ]
+              );
+        }
+        catch (error) {
+            console.error('Error handling payment:', error)
+        }
+        finally {
+            setIsLoadingPayment(false)
+        }
+    }
+
     const renderItem = ({ item }) => {
         return (
             <View style={stylesItem.constainerItem}>
@@ -105,29 +137,37 @@ const CartScreen = () => {
 
     return (
         <View style={{ flex: 1, backgroundColor: 'white' }}>
-            <View style={styles.header}>
-                <Text style={styles.title}>Cart</Text>
-            </View>
-            <View style={{ backgroundColor: '#e3e3e3', flex: 1, margin: 10, borderRadius: 15, padding: 10 }}>
-                {isLoading ? (
-                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                        <ActivityIndicator size="large" color="gray" />
+            {isLoadingPayment ? (
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <ActivityIndicator size="large" color="gray" />
+                </View>
+            ) : (
+                <>
+                    <View style={styles.header}>
+                        <Text style={styles.title}>Cart</Text>
                     </View>
-                ) : (
-                    data && data.length > 0 ? (
-                        <>
-                            <FlatList data={data} renderItem={renderItem}>
-                            </FlatList>
-                            <TouchableOpacity style={styles.paymentButton}>
-                                <Text style={styles.textPayment}>Payment now</Text>
-                            </TouchableOpacity></>
-                    ) : (
-                        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                            <Text>Giỏ hàng đang trống !</Text>
-                        </View>
-                    )
-                )}
-            </View>
+                    <View style={{ backgroundColor: '#e3e3e3', flex: 1, margin: 10, borderRadius: 15, padding: 10 }}>
+                        {isLoading ? (
+                            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                                <ActivityIndicator size="large" color="gray" />
+                            </View>
+                        ) : (
+                            data && data.length > 0 ? (
+                                <>
+                                    <FlatList data={data} renderItem={renderItem}>
+                                    </FlatList>
+                                    <TouchableOpacity style={styles.paymentButton} onPress={onPressPayment}>
+                                        <Text style={styles.textPayment}>Payment now</Text>
+                                    </TouchableOpacity></>
+                            ) : (
+                                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                                    <Text>Giỏ hàng đang trống !</Text>
+                                </View>
+                            )
+                        )}
+                    </View>
+                </>
+            )}
         </View>
     );
 }

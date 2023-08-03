@@ -8,9 +8,10 @@ import {
   View,
   FlatList,
   Image,
-  ActivityIndicator
+  ActivityIndicator,
+  Alert
 } from 'react-native';
-import { fetchDataProduct, creatDataCart } from './components/handles';
+import { fetchDataProduct, creatDataCart, checkProductCart } from './components/handles';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import userDataSingleton from './components/UserDataSingleton';
 import userIdDataSingleton from './components/UserIdDataSingleton';
@@ -30,8 +31,6 @@ const HomeScreen = () => {
       setIsLoading(false)
     };
 
-    console.log(dataUser)
-
     getDataProduct()
   }, [])
 
@@ -41,7 +40,17 @@ const HomeScreen = () => {
 
   const onPressPlus = async (item) => {
     const userId = userIdDataSingleton.getData()
-    await creatDataCart(item, userId)
+    if (userId) {
+      const isProductInCart = await checkProductCart(userId, item.id)
+      if (isProductInCart) {
+        Alert.alert('Notification', 'Product is already in the cart.');
+      } else {
+        await creatDataCart(item, userId);
+        Alert.alert('Notification', 'Added product successfully.');
+      }
+    } else {
+      Alert.alert('Notification', 'Please log in before adding to cart.');
+    }
   }
 
   const renderItem = ({ item }) => {
@@ -124,7 +133,7 @@ const styles = StyleSheet.create({
     color: 'black'
   },
   button: {
-    backgroundColor: 'green',
+    backgroundColor: '#09b44c',
     alignSelf: 'center',
     borderRadius: 10
   },

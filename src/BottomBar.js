@@ -1,32 +1,40 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
+import userDataSingleton from './components/UserDataSingleton';
 
 const BottomBar = ({ activeTab, setActiveTab }) => {
+  const userData = userDataSingleton.getData()
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={[styles.tab, activeTab === 'home' && styles.activeTab]}
+        style={[ styles.tab, activeTab === 'home' ]}
         onPress={() => setActiveTab('home')}
       >
-        <Text style={styles.tabText}>Home</Text>
+        <Image style={[ styles.icon, { tintColor: activeTab === 'home' ? '#09b44c' : 'black' } ]} source={require('../asset/image/home.png')}/>
+        <Text style={[ styles.tabText, { color: activeTab === 'home' ? '#09b44c' : 'black' } ]}>Home</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={[styles.tab, activeTab === 'explore' && styles.activeTab]}
+        style={[ styles.tab, activeTab === 'explore' ]}
         onPress={() => setActiveTab('explore')}
       >
-        <Text style={styles.tabText}>Explore</Text>
+        <Image style={[ styles.icon, { tintColor: activeTab === 'explore' ? '#09b44c' : 'black' } ]} source={require('../asset/image/app.png')}/>
+        <Text style={[ styles.tabText, { color: activeTab === 'explore' ? '#09b44c' : 'black' } ]}>Explore</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={[styles.tab, activeTab === 'cart' && styles.activeTab]}
+        style={[ styles.tab, activeTab === 'cart' ]}
         onPress={() => setActiveTab('cart')}
+        disabled={!userData}
       >
-        <Text style={styles.tabText}>Cart</Text>
+        <Image style={[ styles.icon, { tintColor: activeTab === 'cart' ? '#09b44c' : 'black' } ]} source={require('../asset/image/shopping-cart.png')}/>
+        <Text style={[ styles.tabText, { color: activeTab === 'cart' ? '#09b44c' : 'black' } ]}>Cart</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={[styles.tab, activeTab === 'profile' && styles.activeTab]}
+        style={[ styles.tab, activeTab === 'profile' ]}
         onPress={() => setActiveTab('profile')}
       >
-        <Text style={styles.tabText}>Profile</Text>
+        <Image style={[ styles.icon, { tintColor: activeTab === 'profile' ? '#09b44c' : 'black' } ]} source={require('../asset/image/user.png')}/>
+        <Text style={[ styles.tabText, { color: activeTab === 'profile' ? '#09b44c' : 'black' } ]}>Profile</Text>
       </TouchableOpacity>
     </View>
   );
@@ -46,13 +54,17 @@ const styles = {
     alignItems: 'center',
     paddingVertical: 10,
   },
-  activeTab: {
-    backgroundColor: '#e0e0e0',
-  },
   tabText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: 'bold',
   },
+  icon: {
+    height: 20, 
+    width: 20
+  },
+  disabledTable: {
+
+  }
 };
 
 export default BottomBar;

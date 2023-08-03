@@ -6,8 +6,8 @@ import {
   Text,
   TouchableOpacity,
   View,
-  FlatList,
   Image,
+  Alert
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import userDataSingleton from './components/UserDataSingleton';
@@ -17,15 +17,15 @@ import { getProfileUser } from './components/handles';
 const ProfileScreen = () => {
   const [data, setData] = useState([])
   const [reload, setReload] = useState(false);
-  
+
   const dataUser = userDataSingleton.getData()
 
   const navigation = useNavigation()
 
   useEffect(() => {
-    const getProfile = async() => {
+    const getProfile = async () => {
       if (dataUser) {
-        const {profileData, profileId} = await getProfileUser(dataUser.email)
+        const { profileData, profileId } = await getProfileUser(dataUser.email)
         setData(profileData)
         await userIdDataSingleton.setData(profileId)
         console.log(profileData)
@@ -39,10 +39,12 @@ const ProfileScreen = () => {
 
   const userName = data ? data.name : 'Guess'
 
-  const handleReload = () => {
+  const onPressLogout = () => {
     userDataSingleton.setData(null)
     userIdDataSingleton.setData(null)
-    setReload(!reload);
+    setReload(!reload)
+    setData(null)
+    navigation.navigate('MainContainer')
   };
 
   const onPressSignIn = () => {
@@ -55,17 +57,17 @@ const ProfileScreen = () => {
 
   return (
     <View style={styles.container}>
-        <View style={{flex: 1, alignItems: 'center'}}>
-          <View style={styles.imageView}>
-            <Image style={styles.image} resizeMode='contain' source={require('../asset/image/user.png')}/>
-          </View>
-          <Text style={styles.usernameTitle}>{userName}</Text>
+      <View style={{ flex: 1, alignItems: 'center' }}>
+        <View style={styles.imageView}>
+          <Image style={styles.image} resizeMode='contain' source={require('../asset/image/user.png')} />
         </View>
-        <View style={styles.subView}>
-          {dataUser ? (
-            <TouchableOpacity
+        <Text style={styles.usernameTitle}>{userName}</Text>
+      </View>
+      <View style={styles.subView}>
+        {dataUser ? (
+          <TouchableOpacity
             style={styles.customButton}
-            onPress={handleReload}>
+            onPress={onPressLogout}>
             <View style={styles.innerButton}>
               <View
                 style={[
@@ -82,41 +84,41 @@ const ProfileScreen = () => {
             </View>
             <Text style={{ fontWeight: 'bold' }}>{'\u3009'}</Text>
           </TouchableOpacity>
-          ) : (
-            <><TouchableOpacity style={styles.customButton} onPress={onPressSignIn}>
+        ) : (
+          <><TouchableOpacity style={styles.customButton} onPress={onPressSignIn}>
+            <View style={styles.innerButton}>
+              <View style={[styles.innerButon_imageView, { backgroundColor: '#ccf2ee', borderColor: 'green' }]}>
+                <Image style={{ height: 30, width: 30, tintColor: 'green' }} source={require('../asset/image/login.png')} />
+              </View>
+              <Text style={styles.innerButton_title}>Sign In</Text>
+            </View>
+            <Text style={{ fontWeight: 'bold' }}>{'\u3009'}</Text>
+          </TouchableOpacity><TouchableOpacity style={styles.customButton} onPress={onPressSignUp}>
               <View style={styles.innerButton}>
-                <View style={[styles.innerButon_imageView, { backgroundColor: '#ccf2ee', borderColor: 'green' }]}>
-                  <Image style={{ height: 30, width: 30, tintColor: 'green' }} source={require('../asset/image/login.png')} />
+                <View style={[styles.innerButon_imageView, { backgroundColor: '#ffdee8', borderColor: '#fe346e' }]}>
+                  <Image style={{ height: 30, width: 30, tintColor: '#fe346e' }} source={require('../asset/image/register.png')} />
                 </View>
-                <Text style={styles.innerButton_title}>Sign In</Text>
+                <Text style={styles.innerButton_title}>Sign Up</Text>
               </View>
               <Text style={{ fontWeight: 'bold' }}>{'\u3009'}</Text>
-            </TouchableOpacity><TouchableOpacity style={styles.customButton} onPress={onPressSignUp}>
-                <View style={styles.innerButton}>
-                  <View style={[styles.innerButon_imageView, { backgroundColor: '#ffdee8', borderColor: '#fe346e' }]}>
-                    <Image style={{ height: 30, width: 30, tintColor: '#fe346e' }} source={require('../asset/image/register.png')} />
-                  </View>
-                  <Text style={styles.innerButton_title}>Sign Up</Text>
-                </View>
-                <Text style={{ fontWeight: 'bold' }}>{'\u3009'}</Text>
-              </TouchableOpacity></>
-          )}
-        </View>
+            </TouchableOpacity></>
+        )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
-    backgroundColor: '#9971ee', 
+    flex: 1,
+    backgroundColor: '#9971ee',
     padding: 30
   },
   imageView: {
-    backgroundColor: 'white', 
-    height: 150, 
-    width: 150, 
-    padding: 20, 
+    backgroundColor: 'white',
+    height: 150,
+    width: 150,
+    padding: 20,
     borderRadius: 100
   },
   image: {
@@ -125,40 +127,40 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   usernameTitle: {
-    fontSize: 25, 
-    fontWeight: 'bold', 
-    color: 'white', 
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: 'white',
     padding: 10
   },
   subView: {
-    height: '70%', 
-    backgroundColor: 'white', 
-    borderTopLeftRadius: 30, 
-    borderTopRightRadius: 30, 
-    bottom: 0, 
-    left: 0, 
-    right: 0, 
-    position: 'absolute', 
+    height: '70%',
+    backgroundColor: 'white',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    position: 'absolute',
     padding: 20
   },
   customButton: {
-    flexDirection: 'row', 
-    padding: 10, 
-    alignItems: 'center', 
+    flexDirection: 'row',
+    padding: 10,
+    alignItems: 'center',
     justifyContent: 'space-between'
   },
   innerButton: {
-    flexDirection: 'row', 
+    flexDirection: 'row',
     alignItems: 'center'
   },
   innerButon_imageView: {
-    padding: 10, 
-    borderRadius: 10, 
+    padding: 10,
+    borderRadius: 10,
     borderWidth: 2
   },
   innerButton_title: {
-    fontSize: 20, 
-    color: 'black', 
+    fontSize: 20,
+    color: 'black',
     marginLeft: 10
   }
 });

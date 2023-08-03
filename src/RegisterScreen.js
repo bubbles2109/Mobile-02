@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, TextInput, Image } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, TextInput, Image, ActivityIndicator, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { createAccount } from './components/handles'
 
@@ -15,6 +15,7 @@ const Register = ({ navigation }) => {
     password: false,
     confirmPassword: false
   })
+  const [isLoading, setIsLoading] = useState(false);
 
   const onPressBack = () => {
     navigation.goBack()
@@ -47,9 +48,15 @@ const Register = ({ navigation }) => {
     setIsValidEmail(isValidEmail);
     setIsValidPassword(isValidPassword);
     if (!emptyFields.username && !emptyFields.email && !emptyFields.password && !emptyFields.confirmPassword && isValidEmail && isValidPassword) {
+      setIsLoading(true)
       createAccount(username, email, password)
         .then(() => {
+          setIsLoading(false)
           navigation.goBack()
+        })
+        .catch(() => {
+          setIsLoading(false)
+          Alert.alert('Notification', 'Registration failed, please check the connection again.')
         })
     }
     
@@ -80,7 +87,13 @@ const Register = ({ navigation }) => {
           {isEmpty.confirmPassword && <Text style={{ color: 'red', marginHorizontal: 20 }}>ConfirmPassword is empty</Text> || !isValidPassword && <Text style={{ color: 'red', marginHorizontal: 20 }}>Confirm Password do not match Password.</Text>}
 
           <TouchableOpacity style={styles.registerButton} onPress={onPressRegister}>
-            <Text style={styles.textButton}>Register</Text>
+            {isLoading ? (
+              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <ActivityIndicator size="large" color="gray" />
+              </View>
+            ) : (
+              <Text style={styles.textButton}>Register</Text>
+            )}
           </TouchableOpacity>
         </View>
         <View style={{ alignItems: 'center', marginHorizontal: 20 }}>

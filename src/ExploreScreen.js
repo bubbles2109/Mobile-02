@@ -1,7 +1,5 @@
 import React from 'react';
 import {
-    SafeAreaView,
-    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -13,12 +11,12 @@ import {
 
 const ExploreScreen = () => {
     const category = [
-        { id: 1, image: require('../asset/image/hinh1.jpg'), title: 'Fruit & Vegetable' },
-        { id: 2, image: require('../asset/image/hinh2.jpg'), title: 'Meat' },
-        { id: 3, image: require('../asset/image/hinh3.jpg'), title: 'Fish' },
-        { id: 4, image: require('../asset/image/hinh3.jpg'), title: 'Bottled Water' },
-        { id: 5, image: require('../asset/image/hinh3.jpg'), title: 'Seafood' },
-        { id: 6, image: require('../asset/image/hinh3.jpg'), title: 'Snack' },
+        { id: 1, image: require('../asset/image/fruit&vegetable.png'), title: 'Fruit & Vegetable' },
+        { id: 2, image: require('../asset/image/meat.png'), title: 'Meat' },
+        { id: 3, image: require('../asset/image/fish.jpg'), title: 'Fish' },
+        { id: 4, image: require('../asset/image/bottle.jpg'), title: 'Bottled Water' },
+        { id: 5, image: require('../asset/image/seafood.jpg'), title: 'Seafood' },
+        { id: 6, image: require('../asset/image/snack.jpg'), title: 'Snack' },
     ];
 
     const renderItem = ({ item }) => {

@@ -18,6 +18,7 @@ const CartScreen = () => {
     const [amount, setAmount] = useState({})
     const [isLoading, setIsLoading] = useState(true)
     const [isLoadingPayment, setIsLoadingPayment] = useState(false)
+    const [totalAmount, setTotalAmount] = useState(0);
 
     const userId = userIdDataSingleton.getData()
 
@@ -29,8 +30,8 @@ const CartScreen = () => {
     }, [])
 
     useEffect(() => {
-        console.log(amount);
-    }, [amount]);
+        calculateTotalAmount();
+    }, [data, amount]);
 
     const getDataCart = async () => {
         const dataRef = await fetchDataCart(userId)
@@ -39,10 +40,10 @@ const CartScreen = () => {
 
         const initialAmount = {};
         dataRef.forEach((item) => {
-            initialAmount[item.id] = amount[item.id] || 1;
+            initialAmount[item.price] = amount[item.price] || 1;
         });
         setAmount(initialAmount);
-
+        calculateTotalAmount();
     }
 
     const addAmount = (itemId) => {
@@ -63,6 +64,18 @@ const CartScreen = () => {
         deleteDocumentByProductId(itemId, userId)
         getDataCart()
     }
+
+    const calculateTotalAmount = () => {
+        let total = 0;
+        for (const itemId in amount) {
+            const item = data.find(item => item.id === itemId);
+            if (item) {
+                total += parseFloat(item.price) * amount[itemId];
+                console.log(total)
+            }
+        }
+        setTotalAmount(total);
+    };
 
     const onPressPayment = async () => {
         setIsLoadingPayment(true)
@@ -154,6 +167,7 @@ const CartScreen = () => {
                                 <>
                                     <FlatList data={data} renderItem={renderItem}>
                                     </FlatList>
+                                    <Text style={styles.totalText}>Total: {totalAmount.toFixed(2)}$</Text>
                                     <TouchableOpacity style={styles.paymentButton} onPress={onPressPayment}>
                                         <Text style={styles.textPayment}>Payment now</Text>
                                     </TouchableOpacity></>
